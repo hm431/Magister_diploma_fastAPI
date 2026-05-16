@@ -1,5 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.openapi.docs import get_redoc_html
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from loguru import logger
@@ -33,7 +35,7 @@ app = FastAPI(
     version="1.0.0",
     openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
     docs_url="/docs",
-    redoc_url="/redoc",
+    redoc_url=None,
     lifespan=lifespan,
 )
 
@@ -48,6 +50,15 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 register_exception_handlers(app)
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
+
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc() -> HTMLResponse:
+    return get_redoc_html(
+        openapi_url=f"{settings.API_V1_PREFIX}/openapi.json",
+        title="API Docs",
+        redoc_js_url="https://cdn.jsdelivr.net/npm/redoc@2.1.3/bundles/redoc.standalone.js",
+    )
 
 
 @app.get("/health", tags=["system"])
