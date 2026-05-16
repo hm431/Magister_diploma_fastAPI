@@ -3,6 +3,7 @@ from app.api.deps import get_current_user
 from app.api.v1.endpoints import (
     auth, users, projects, works, schedule, materials,
     supply, risks, control, reports, integration_1c, ws,
+    brigade_assignment,
 )
 
 api_router = APIRouter()
@@ -22,5 +23,6 @@ api_router.include_router(supply.router,         prefix="/supply",      tags=["�
 api_router.include_router(risks.router,          prefix="/risks",       tags=["Анализ рисков"],              **protected)
 api_router.include_router(control.router,        prefix="/control",     tags=["Оперативный контроль"],       **protected)
 api_router.include_router(reports.router,        prefix="/reports",     tags=["Отчётность"],                 **protected)
-api_router.include_router(integration_1c.router, prefix="/integration", tags=["Интеграция с 1С"],            **protected)
-api_router.include_router(ws.router,             prefix="/ws",          tags=["WebSocket"],                  **protected)
+api_router.include_router(integration_1c.router,    prefix="/integration",    tags=["Интеграция с 1С"],            **protected)
+api_router.include_router(ws.router,               prefix="/ws",            tags=["WebSocket"],                  **protected)
+api_router.include_router(brigade_assignment.router, prefix="/sro",          tags=["Распределение бригад"],       **protected)

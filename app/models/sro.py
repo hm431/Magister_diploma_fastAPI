@@ -88,6 +88,9 @@ class ScheduleCalculation(Base):
     items = relationship(
         "ScheduleItem", back_populates="calculation", cascade="all, delete-orphan"
     )
+    brigade_assignments = relationship(
+        "BrigadeAssignment", back_populates="calculation", cascade="all, delete-orphan"
+    )
 
 
 class ScheduleItem(Base):
@@ -109,3 +112,25 @@ class ScheduleItem(Base):
 
     calculation = relationship("ScheduleCalculation", back_populates="items")
     work = relationship("Work")
+
+
+class BrigadeAssignment(Base):
+    """sro.brigade_assignment — назначения бригад на участки (y_{ks}, формула 2.31)."""
+    __tablename__ = "brigade_assignment"
+    __table_args__ = {"schema": "sro"}
+
+    assignment_id: Mapped[int] = mapped_column(primary_key=True)
+    brigade_id: Mapped[int] = mapped_column(
+        ForeignKey("ref.brigade.brigade_id"), nullable=False
+    )
+    site_id: Mapped[int] = mapped_column(
+        ForeignKey("ref.site.site_id"), nullable=False
+    )
+    period_start: Mapped[date] = mapped_column(Date, nullable=False)
+    period_end: Mapped[date] = mapped_column(Date, nullable=False)
+    assignment_cost: Mapped[Optional[float]] = mapped_column(Numeric(12, 4))
+    schedule_calculation_id: Mapped[int] = mapped_column(
+        ForeignKey("sro.schedule_calculation.calculation_id"), nullable=False
+    )
+
+    calculation = relationship("ScheduleCalculation", back_populates="brigade_assignments")
