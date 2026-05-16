@@ -7,8 +7,9 @@ from loguru import logger
 from app.core.config import settings
 from app.core.exceptions import register_exception_handlers
 from app.api.v1.router import api_router
-from app.db.session import engine
+from app.db.session import engine, AsyncSessionLocal
 from app.db.base import Base
+from app.db.init_db import init_db
 
 
 @asynccontextmanager
@@ -17,6 +18,9 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("База данных подключена, таблицы созданы")
+        async with AsyncSessionLocal() as session:
+            await init_db(session)
+        logger.info("Начальные данные загружены")
     except Exception as e:
         logger.warning(f"БД недоступна при старте, работаем без неё: {e}")
     yield
