@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/{project_id}/calculate",
+    "/{project_id}",
     response_model=ScheduleCalculationRead,
     summary="Запустить расчёт календарного графика по методу CPM",
 )
